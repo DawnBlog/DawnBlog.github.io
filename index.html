@@ -199,7 +199,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-09-21 09:37:25" itemprop="dateModified" datetime="2020-09-21T09:37:25+08:00">2020-09-21</time>
+                <time title="Modified: 2020-09-21 09:39:03" itemprop="dateModified" datetime="2020-09-21T09:39:03+08:00">2020-09-21</time>
               </span>
 
           
@@ -214,10 +214,10 @@
 
       
           <h1 id="文件上传小结"><a href="#文件上传小结" class="headerlink" title="文件上传小结"></a>文件上传小结</h1><h2 id="前端验证绕过"><a href="#前端验证绕过" class="headerlink" title=" 前端验证绕过"></a><font color="#FF0000"> 前端验证绕过</font></h2><p>前端代码无法被burp suite抓取到，绕过前端验证的方法一般是先上传一个正常图片后缀的文件（jpg/png/gif），之后再通过burp suite抓取请求，把上传请求中的（jpg/png/gif）后缀改为php后再把请求发送出去。  </p>
-<h2 id="后端验证绕过"><a href="#后端验证绕过" class="headerlink" title=" 后端验证绕过"></a><font color="#FF0000"> 后端验证绕过</font></h2><h3 id="（1）文件头、文件类型绕过-MIME"><a href="#（1）文件头、文件类型绕过-MIME" class="headerlink" title="（1）文件头、文件类型绕过(MIME)"></a>（1）文件头、文件类型绕过(MIME)</h3><p>常见的文件头检查代码如下图。<br><img src="/.cn//.%5C%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89%5C1.png" alt="1">  </p>
+<h2 id="后端验证绕过"><a href="#后端验证绕过" class="headerlink" title=" 后端验证绕过"></a><font color="#FF0000"> 后端验证绕过</font></h2><h3 id="（1）文件头、文件类型绕过-MIME"><a href="#（1）文件头、文件类型绕过-MIME" class="headerlink" title="（1）文件头、文件类型绕过(MIME)"></a>（1）文件头、文件类型绕过(MIME)</h3><p>常见的文件头检查代码如下图。<br><img src="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/.%5C%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89%5C1.png" alt="1">  </p>
 <h3 id="（2）代码审计"><a href="#（2）代码审计" class="headerlink" title="（2）代码审计"></a>（2）代码审计</h3><p>代码先用if语句对文件类型进行数组白名单核对，如果文件类型不在数组中则返回“文件类型不正确, 只允许上传 jpeg jpg png gif 类型的文件”，若文件类型在数组中则执行下一个else if语句检查文件头是否在数组中，文件头如果在数组中文件就能上传成功</p>
 <h3 id="（3）常见文件头："><a href="#（3）常见文件头：" class="headerlink" title="（3）常见文件头："></a>（3）常见文件头：</h3><p>PNG(89 50 4E 47 0D 0A 1A 0A)，JPG(FF D8 DD E0 00 10 4A 46)，GIF(47 49 46 38 39 61 CA 03)  </p>
-<h3 id="（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp-suite抓取，改文件后缀为php再把请求发送出去。"><a href="#（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp-suite抓取，改文件后缀为php再把请求发送出去。" class="headerlink" title="（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp suite抓取，改文件后缀为php再把请求发送出去。"></a>（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp suite抓取，改文件后缀为php再把请求发送出去。</h3><h2 id="htaccess绕过"><a href="#htaccess绕过" class="headerlink" title=" .htaccess绕过"></a><font color="#FF0000"> .htaccess绕过</font></h2><p>常见的黑名单检测代码如下图。</p>
+<h3 id="（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp-suite抓取，改文件后缀为php再把请求发送出去。"><a href="#（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp-suite抓取，改文件后缀为php再把请求发送出去。" class="headerlink" title="（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp suite抓取，改文件后缀为php再把请求发送出去。"></a>（4）绕过方法：在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp suite抓取，改文件后缀为php再把请求发送出去。</h3><h2 id="htaccess绕过"><a href="#htaccess绕过" class="headerlink" title=" .htaccess绕过"></a><font color="#FF0000"> .htaccess绕过</font></h2><p>常见的黑名单检测代码如下图。<br><img src="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/.%5C%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89%5C2.png" alt="1"> </p>
 <p>把常见的网页可执行文件后缀放在</p>
 
       
