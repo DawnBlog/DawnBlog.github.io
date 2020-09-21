@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://dawnchen.cn/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png">
 <meta property="og:image" content="https://dawnchen.cn/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png">
 <meta property="article:published_time" content="2020-09-20T12:47:09.000Z">
-<meta property="article:modified_time" content="2020-09-21T08:25:20.395Z">
+<meta property="article:modified_time" content="2020-09-21T08:31:12.680Z">
 <meta property="article:author" content="DawnChen">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://dawnchen.cn/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png">
@@ -204,7 +204,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-09-21 16:25:20" itemprop="dateModified" datetime="2020-09-21T16:25:20+08:00">2020-09-21</time>
+                <time title="Modified: 2020-09-21 16:31:12" itemprop="dateModified" datetime="2020-09-21T16:31:12+08:00">2020-09-21</time>
               </span>
 
           
@@ -273,6 +273,11 @@
 <p>代码会将路径和文件进行拼接，再看看请求信息发现有个GET参数road=/var/www/html/upload，很明显这是一个上传路径。可以利用这个路径进行00路径截断。在路径后面添加shell.php%00（把shell.php当成一个目录），路径和文件拼接的时候会截断（忽略）%00后面的内容。因为shell.php目录不存在，因此shell.php就变成了上传文件的文件名</p>
 </blockquote>
 <img src="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png" class>
+
+<blockquote>
+<p>关于00截断原理的一些思考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zpy1998zpy/article/details/80545408?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242" title="CSDN">点击加载</a></p>
+</blockquote>
+
     </div>
 
     
