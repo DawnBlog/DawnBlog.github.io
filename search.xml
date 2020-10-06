@@ -1,78 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CG-CTF/x00</title>
-    <url>/2020/10/05/CG-CTF-x00/</url>
-    <content><![CDATA[<blockquote>
-<p>题目链接：<br><a href="http://teamxlc.sinaapp.com/web4/f5a14f5e6e3453b78cd73899bad98d53/index.php">http://teamxlc.sinaapp.com/web4/f5a14f5e6e3453b78cd73899bad98d53/index.php</a></p>
-</blockquote>
-<a id="more"></a>
-<h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><img src="/2020/10/05/CG-CTF-x00/1.png" class>
-
-<p>要求以GET方式传递的nctf参数必须为数字但又要含有#biubiiubiu，我用了两种方法解题  </p>
-<hr>
-<h2 id="00截断"><a href="#00截断" class="headerlink" title="00截断"></a>00截断</h2><p>构造url：  </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf&#x3D;1%00#biubiubiu</span><br></pre></td></tr></table></figure>
-<img src="/2020/10/05/CG-CTF-x00/2.png" class>  
-
-<p>再次构造url：  </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf&#x3D;1%00%23biubiubiu  </span><br></pre></td></tr></table></figure>
-<img src="/2020/10/05/CG-CTF-x00/3.png" class>  
-
-<hr>
-<h2 id="数组绕过"><a href="#数组绕过" class="headerlink" title="数组绕过"></a>数组绕过</h2><p>构造url：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf[]&#x3D;</span><br></pre></td></tr></table></figure>
-<img src="/2020/10/05/CG-CTF-x00/4.png" class>  
-
-<hr>
-<h2 id="方法解析"><a href="#方法解析" class="headerlink" title="方法解析"></a>方法解析</h2><h3 id="ereg-函数："><a href="#ereg-函数：" class="headerlink" title="ereg()函数："></a>ereg()函数：</h3><p>用指定的模式搜索一个字符串中指定的字符串,如果匹配成功返回true,否则,则返回false。搜索字母的字符是大小写敏感的。题中ereg()正则限制了传入的nctf参数的形式，只能为一个或多个数字。ereg()函数存在NULL截断漏洞，导致了正则过滤被绕过,所以可以使用%00截断正则匹配。ereg()函数只能处理字符串，遇到数组做参数返回NULL，判断用的是 === ，要求类型也相同，而NULL跟FALSE类型是不同的,strpos()的参数同样不能为数组，否则返回NULL，而判断用的是 !== ，所以这里的条件成立，也能得到flag。</p>
-<h3 id="strpos-函数："><a href="#strpos-函数：" class="headerlink" title="strpos()函数："></a>strpos()函数：</h3><p>查找字符串在另一字符串中第一次出现的位置（区分大小写）</p>
-<p>在方法一00截断中我们首先构造了?nctf=1%00#biubiubiu ，但是发现页面返回了 “骚年，继续努力吧啊~”，通过burp suite看到我们传递的参数?nctf =1%00#biubiubiu并没有发送出去，%00后面的内容没有了  </p>
-<img src="/2020/10/05/CG-CTF-x00/5.png" class>  
-
-<hr>
-<blockquote>
-<p>以下内容转载于：<a href="https://segmentfault.com/a/1190000013006640">https://segmentfault.com/a/1190000013006640</a>  </p>
-</blockquote>
-<p>我去网上搜了一下有关url栏中#的解读：  </p>
-<h3 id="1、-的含义"><a href="#1、-的含义" class="headerlink" title=" 1、#的含义 "></a><font color="##FF0000"> 1、#的含义 </font></h3><p>#代表网页中的一个位置。其右面的字符，就是该位置的标识符。比如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;index.html#print</span><br></pre></td></tr></table></figure>
-<p>代表网页index.html的print位置。浏览器读取这个URL后，会自动将print位置滚动至可视区域。  </p>
-<p>为网页位置指定标识符，有两个方法。一是使用锚点，比如：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;a name&#x3D;&quot;print&quot;&gt;&lt;&#x2F;a&gt;，二是使用id属性，比如&lt;div id&#x3D;&quot;print&quot; &gt;  </span><br></pre></td></tr></table></figure>
-
-<h3 id="2、HTTP请求不包括"><a href="#2、HTTP请求不包括" class="headerlink" title=" 2、HTTP请求不包括# "></a><font color="##FF0000"> 2、HTTP请求不包括# </font></h3><p>#是用来指导浏览器动作的，对服务器端完全无用。所以，HTTP请求中不包括#。<br>比如，访问下面的网址：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;index.html#print</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">浏览器实际发出的请求是这样的： </span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">GET &#x2F;index.html HTTP&#x2F;1.1  </span><br><span class="line">Host: www.example.com</span><br></pre></td></tr></table></figure>
-<p>可以看到，只是请求index.html，根本没有”#print”的部分。  </p>
-<h3 id="3、-后的字符"><a href="#3、-后的字符" class="headerlink" title=" 3、#后的字符 "></a><font color="##FF0000"> 3、#后的字符 </font></h3><p>在第一个#后面出现的任何字符，都会被浏览器解读为位置标识符。这意味着，这些字符都不会被发送到服务器端。<br>比如，下面URL的原意是指定一个颜色值：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;?color&#x3D;#fff</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">但是，浏览器实际发出的请求是：</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line">GET &#x2F;?color&#x3D; HTTP&#x2F;1.1  </span><br><span class="line">Host: www.example.com</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">可以看到，”#fff”被省略了。只有将#转码为%23，浏览器才会将其作为实义字符处理。也就是说，上面的网址应该被写成：</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">http:&#x2F;&#x2F;example.com&#x2F;?color&#x3D;%23fff</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>CTF</category>
-        <category>WEB</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>CTF练习平台</title>
-    <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
-    <content><![CDATA[<p>新手——进阶——writeup</p>
-<a id="more"></a>
-<h2 id="新手"><a href="#新手" class="headerlink" title="新手"></a>新手</h2><blockquote>
-<p>bugku：<a href="https://www.ctfhub.com/" title="bugku">点击直达</a><br>南邮CTF：<a href="https://cgctf.nuptsast.com/challenges#Web" title="南邮CTF">点击直达</a><br>CTFHub：<a href="https://www.ctfhub.com/#/index" title="CTFHub">点击直达</a><br>攻防世界：<a href="https://adworld.xctf.org.cn/" title="攻防世界">点击直达</a>  </p>
-</blockquote>
-<hr>
-<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><blockquote>
-<p>i春秋：<a href="https://www.ichunqiu.com/battalion" title="CTFHub">点击直达</a><br>BUUCTF：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a><br>X计划平台：<a href="https://www.linkedbyx.com/home" title="X计划平台">点击直达</a>  </p>
-</blockquote>
-<hr>
-<h2 id="Writeup"><a href="#Writeup" class="headerlink" title="Writeup"></a>Writeup</h2><p>颖奇L’Amore：<a href="https://www.gem-love.com/" title="颖奇L&#39;Amore">点击直达</a></p>
-]]></content>
-      <categories>
-        <category>CTF</category>
-        <category>WEB</category>
-      </categories>
-  </entry>
-  <entry>
     <title>sql注入常见代码</title>
     <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>sql注入</p>
@@ -162,6 +90,78 @@
 <blockquote>
 <p>关于00截断原理的一些思考：<a href="https://blog.csdn.net/zpy1998zpy/article/details/80545408?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242" title="CSDN">点击加载</a></p>
 </blockquote>
+]]></content>
+      <categories>
+        <category>CTF</category>
+        <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>CTF练习平台</title>
+    <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
+    <content><![CDATA[<p>新手——进阶——writeup</p>
+<a id="more"></a>
+<h2 id="新手"><a href="#新手" class="headerlink" title="新手"></a>新手</h2><blockquote>
+<p>bugku：<a href="https://www.ctfhub.com/" title="bugku">点击直达</a><br>南邮CTF：<a href="https://cgctf.nuptsast.com/challenges#Web" title="南邮CTF">点击直达</a><br>CTFHub：<a href="https://www.ctfhub.com/#/index" title="CTFHub">点击直达</a><br>攻防世界：<a href="https://adworld.xctf.org.cn/" title="攻防世界">点击直达</a>  </p>
+</blockquote>
+<hr>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><blockquote>
+<p>i春秋：<a href="https://www.ichunqiu.com/battalion" title="CTFHub">点击直达</a><br>BUUCTF：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a><br>X计划平台：<a href="https://www.linkedbyx.com/home" title="X计划平台">点击直达</a>  </p>
+</blockquote>
+<hr>
+<h2 id="Writeup"><a href="#Writeup" class="headerlink" title="Writeup"></a>Writeup</h2><p>颖奇L’Amore：<a href="https://www.gem-love.com/" title="颖奇L&#39;Amore">点击直达</a></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+        <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>CG-CTF/x00</title>
+    <url>/2020/10/05/CG-CTF-x00/</url>
+    <content><![CDATA[<blockquote>
+<p>题目链接：<br><a href="http://teamxlc.sinaapp.com/web4/f5a14f5e6e3453b78cd73899bad98d53/index.php">http://teamxlc.sinaapp.com/web4/f5a14f5e6e3453b78cd73899bad98d53/index.php</a></p>
+</blockquote>
+<a id="more"></a>
+<h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><img src="/2020/10/05/CG-CTF-x00/1.png" class>
+
+<p>要求以GET方式传递的nctf参数必须为数字但又要含有#biubiiubiu，我用了两种方法解题  </p>
+<hr>
+<h2 id="00截断"><a href="#00截断" class="headerlink" title="00截断"></a>00截断</h2><p>构造url：  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf&#x3D;1%00#biubiubiu</span><br></pre></td></tr></table></figure>
+<img src="/2020/10/05/CG-CTF-x00/2.png" class>  
+
+<p>再次构造url：  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf&#x3D;1%00%23biubiubiu  </span><br></pre></td></tr></table></figure>
+<img src="/2020/10/05/CG-CTF-x00/3.png" class>  
+
+<hr>
+<h2 id="数组绕过"><a href="#数组绕过" class="headerlink" title="数组绕过"></a>数组绕过</h2><p>构造url：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;teamxlc.sinaapp.com&#x2F;web4&#x2F;f5a14f5e6e3453b78cd73899bad98d53&#x2F;index.php?nctf[]&#x3D;</span><br></pre></td></tr></table></figure>
+<img src="/2020/10/05/CG-CTF-x00/4.png" class>  
+
+<hr>
+<h2 id="方法解析"><a href="#方法解析" class="headerlink" title="方法解析"></a>方法解析</h2><h3 id="ereg-函数："><a href="#ereg-函数：" class="headerlink" title="ereg()函数："></a>ereg()函数：</h3><p>用指定的模式搜索一个字符串中指定的字符串,如果匹配成功返回true,否则,则返回false。搜索字母的字符是大小写敏感的。题中ereg()正则限制了传入的nctf参数的形式，只能为一个或多个数字。ereg()函数存在NULL截断漏洞，导致了正则过滤被绕过,所以可以使用%00截断正则匹配。ereg()函数只能处理字符串，遇到数组做参数返回NULL，判断用的是 === ，要求类型也相同，而NULL跟FALSE类型是不同的,strpos()的参数同样不能为数组，否则返回NULL，而判断用的是 !== ，所以这里的条件成立，也能得到flag。</p>
+<h3 id="strpos-函数："><a href="#strpos-函数：" class="headerlink" title="strpos()函数："></a>strpos()函数：</h3><p>查找字符串在另一字符串中第一次出现的位置（区分大小写）</p>
+<p>在方法一00截断中我们首先构造了?nctf=1%00#biubiubiu ，但是发现页面返回了 “骚年，继续努力吧啊~”，通过burp suite看到我们传递的参数?nctf =1%00#biubiubiu并没有发送出去，%00后面的内容没有了  </p>
+<img src="/2020/10/05/CG-CTF-x00/5.png" class>  
+
+<hr>
+<blockquote>
+<p>以下内容转载于：<a href="https://segmentfault.com/a/1190000013006640">https://segmentfault.com/a/1190000013006640</a>  </p>
+</blockquote>
+<p>我去网上搜了一下有关url栏中#的解读：  </p>
+<h3 id="1、-的含义"><a href="#1、-的含义" class="headerlink" title=" 1、#的含义 "></a><font color="##FF0000"> 1、#的含义 </font></h3><p>#代表网页中的一个位置。其右面的字符，就是该位置的标识符。比如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;index.html#print</span><br></pre></td></tr></table></figure>
+<p>代表网页index.html的print位置。浏览器读取这个URL后，会自动将print位置滚动至可视区域。  </p>
+<p>为网页位置指定标识符，有两个方法。一是使用锚点，比如：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;a name&#x3D;&quot;print&quot;&gt;&lt;&#x2F;a&gt;，二是使用id属性，比如&lt;div id&#x3D;&quot;print&quot; &gt;  </span><br></pre></td></tr></table></figure>
+
+<h3 id="2、HTTP请求不包括"><a href="#2、HTTP请求不包括" class="headerlink" title=" 2、HTTP请求不包括# "></a><font color="##FF0000"> 2、HTTP请求不包括# </font></h3><p>#是用来指导浏览器动作的，对服务器端完全无用。所以，HTTP请求中不包括#。<br>比如，访问下面的网址：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;index.html#print</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">浏览器实际发出的请求是这样的： </span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">GET &#x2F;index.html HTTP&#x2F;1.1  </span><br><span class="line">Host: www.example.com</span><br></pre></td></tr></table></figure>
+<p>可以看到，只是请求index.html，根本没有”#print”的部分。  </p>
+<h3 id="3、-后的字符"><a href="#3、-后的字符" class="headerlink" title=" 3、#后的字符 "></a><font color="##FF0000"> 3、#后的字符 </font></h3><p>在第一个#后面出现的任何字符，都会被浏览器解读为位置标识符。这意味着，这些字符都不会被发送到服务器端。<br>比如，下面URL的原意是指定一个颜色值：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.example.com&#x2F;?color&#x3D;#fff</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">但是，浏览器实际发出的请求是：</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line">GET &#x2F;?color&#x3D; HTTP&#x2F;1.1  </span><br><span class="line">Host: www.example.com</span><br><span class="line">&#96;&#96;&#96;  </span><br><span class="line"></span><br><span class="line">可以看到，”#fff”被省略了。只有将#转码为%23，浏览器才会将其作为实义字符处理。也就是说，上面的网址应该被写成：</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">http:&#x2F;&#x2F;example.com&#x2F;?color&#x3D;%23fff</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>CTF</category>
