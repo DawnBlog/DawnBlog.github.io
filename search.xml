@@ -72,6 +72,11 @@
       </categories>
   </entry>
   <entry>
+    <title>hello</title>
+    <url>/2020/10/19/hello/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>sql注入常见代码</title>
     <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
     <content><![CDATA[<p>sql注入</p>
