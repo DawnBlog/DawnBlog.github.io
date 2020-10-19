@@ -53,6 +53,11 @@
       </categories>
   </entry>
   <entry>
+    <title>hello</title>
+    <url>/2020/10/19/%5BCISCN-2019-%E5%88%9D%E8%B5%9B%5DLove-Math/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
     <title>CTF练习平台</title>
     <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
     <content><![CDATA[<p>新手——进阶——writeup</p>
@@ -70,11 +75,6 @@
       <categories>
         <category>CTF</category>
       </categories>
-  </entry>
-  <entry>
-    <title>hello</title>
-    <url>/2020/10/19/hello/</url>
-    <content><![CDATA[]]></content>
   </entry>
   <entry>
     <title>sql注入常见代码</title>
