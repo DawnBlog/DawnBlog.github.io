@@ -1,31 +1,661 @@
-extends includes/layout.pug
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl"/>
+  
+  
+  
+  
+  <title>文件上传小结（基础） | 梦</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="练习靶场：CTFHub">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件上传小结（基础）">
+<meta property="og:url" content="https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="梦">
+<meta property="og:description" content="练习靶场：CTFHub">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png">
+<meta property="og:image" content="https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/4.png">
+<meta property="article:published_time" content="2020-09-20T12:47:09.000Z">
+<meta property="article:modified_time" content="2020-10-19T06:03:04.204Z">
+<meta property="article:author" content="DawnChen">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png">
+  
+    <link rel="alternative" href="/atom.xml" title="梦" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
 
-block content
-  #post
-    if top_img === false
-      include includes/header/post-info.pug
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
-    article#article-container.post-content!=page.content
-    include includes/post/post-copyright.pug
-    .tag_share
-      if (theme.post_meta.post.tags)
-        .post-meta__tag-list
-          each item, index in page.tags.data
-            a(href=url_for(item.path)).post-meta__tags #[=item.name]
-      include includes/third-party/share/index.pug
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet" />
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+  </script>
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
         
-    if theme.reward.enable
-      !=partial('includes/post/reward', {}, {cache:theme.fragment_cache})
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
 
-    //- ad
-    if theme.ad && theme.ad.post
-      .post-ad!=theme.ad.post
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/"></a></h1>
+        </hgroup>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder="搜索一下" autocomplete="off">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a  href="/archives/">所有文章</a></li>
+                        
+                            <li><a  href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">玩转开发工具</a></li>
+                        
+                            <li><a  href="/categories/digital">玩转数码</a></li>
+                        
+                            <li><a  href="/categories/algorithm">算法学习</a></li>
+                        
+                            <li><a  href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl github"  target="_blank" href="/xxxxx" title="github">github</a>
+                            
+                                <a class="fl weibo"  target="_blank" href="/xxxxxxxx" title="weibo">weibo</a>
+                            
+                                <a class="fl rss"  target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="http://blog.csdn.net/baidu_21483933">csdn</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="https://segmentfault.com/blog/maocg_web">segmentfault</a>
+                    
+                      <a target="_blank"  class="main-nav-link switch-friends-link" href="http://www.jianshu.com/users/eb37ef89c746/latest_articles">简书</a>
+                    
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">爱动漫,爱游戏,爱编程,爱运动,爱的太多了!</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>
+</div>
 
-    include includes/pagination.pug
-    if theme.related_post && theme.related_post.enable
-      != related_posts(page,site.posts)
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页"></a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页"></a></h1>
+            </hgroup>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/categories/%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/digital">玩转数码</a></li>
+                
+                    <li><a href="/categories/algorithm">算法学习</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="github" target="_blank" href="/xxxxx" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="/xxxxxxxx" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-文件上传小结（基础）" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a  href="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/" class="article-date">
+      <time datetime="2020-09-20T12:47:09.000Z" itemprop="datePublished">2020-09-20</time>
+</a>
 
-    if page.comments !== false && theme.comments && theme.comments.use
-      - var commentsJsLoad = true
-      !=partial('includes/third-party/comments/index', {}, {cache:theme.fragment_cache})
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      文件上传小结（基础）
+    </h1>
+  
+
+
+      </header>
       
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/CTF/">CTF</a><a class="article-category-link" href="/categories/CTF/WEB/">WEB</a>
+    </div>
+
+
+        
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <blockquote>
+<p>练习靶场：<a target="_blank" rel="noopener" href="https://www.ctfhub.com/" title="CTFHub">CTFHub</a></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="上传绕过"><a href="#上传绕过" class="headerlink" title="上传绕过"></a>上传绕过</h1><h2 id="前端验证绕过"><a href="#前端验证绕过" class="headerlink" title=" 前端验证绕过 "></a><font color="#FF0000"> 前端验证绕过 </font></h2><blockquote>
+<p>前端代码无法被burp suite抓取到，绕过前端验证的方法一般是先上传一个正常图片后缀的文件（jpg/png/gif），之后再通过burp suite抓取请求，把上传请求中的（jpg/png/gif）后缀改为php后再把请求发送出去。  </p>
+</blockquote>
+<hr>
+<h2 id="后端验证绕过"><a href="#后端验证绕过" class="headerlink" title=" 后端验证绕过 "></a><font color="#FF0000"> 后端验证绕过 </font></h2><h3 id="1-文件头、文件类型绕过-MIME"><a href="#1-文件头、文件类型绕过-MIME" class="headerlink" title="1. 文件头、文件类型绕过(MIME)"></a>1. 文件头、文件类型绕过(MIME)</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">示例代码:</span><br><span class="line">&lt;?php</span><br><span class="line">header(&quot;Content-type: text&#x2F;html;charset&#x3D;utf-8&quot;);</span><br><span class="line">error_reporting(0);</span><br><span class="line">&#x2F;&#x2F;设置上传目录</span><br><span class="line">define(&quot;UPLOAD_PATH&quot;, dirname(__FILE__) . &quot;&#x2F;upload&#x2F;&quot;);</span><br><span class="line">define(&quot;UPLOAD_URL_PATH&quot;, str_replace($_SERVER[&#39;DOCUMENT_ROOT&#39;], &quot;&quot;, UPLOAD_PATH));</span><br><span class="line">if (!file_exists(UPLOAD_PATH)) &#123;</span><br><span class="line">    mkdir(UPLOAD_PATH, 0755);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (!empty($_POST[&#39;submit&#39;])) &#123;</span><br><span class="line">    if (!$_FILES[&#39;file&#39;][&#39;size&#39;]) &#123;</span><br><span class="line">        echo &quot;&lt;script&gt;alert(&#39;请添加上传文件&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        $file &#x3D; fopen($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], &quot;rb&quot;);</span><br><span class="line">        $bin &#x3D; fread($file, 4);</span><br><span class="line">        fclose($file);</span><br><span class="line">        if (!in_array($_FILES[&#39;file&#39;][&#39;type&#39;], [&quot;image&#x2F;jpeg&quot;, &quot;image&#x2F;jpg&quot;, &quot;image&#x2F;png&quot;, &quot;image&#x2F;gif&quot;])) &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;文件类型不正确, 只允许上传 jpeg jpg png gif 类型的文件&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">        &#125; else if (!in_array(bin2hex($bin), [&quot;89504E47&quot;, &quot;FFD8FFE0&quot;, &quot;47494638&quot;])) &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;文件错误&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            $name &#x3D; basename($_FILES[&#39;file&#39;][&#39;name&#39;]);</span><br><span class="line">            if (move_uploaded_file($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], UPLOAD_PATH . $name)) &#123;</span><br><span class="line">                echo &quot;&lt;script&gt;alert(&#39;上传成功&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">                echo &quot;上传文件相对路径&lt;br&gt;&quot; . UPLOAD_URL_PATH . $name;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                echo &quot;&lt;script&gt;alert(&#39;上传失败&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-代码审计"><a href="#2-代码审计" class="headerlink" title="2. 代码审计"></a>2. 代码审计</h3><blockquote>
+<p>代码先用if语句对文件类型进行数组白名单核对，如果文件类型不在数组中则返回“文件类型不正确, 只允许上传 jpeg jpg png gif 类型的文件”，若文件类型在数组中则执行下一个else if语句检查文件头是否在数组中，文件头如果在数组中文件就能上传成功</p>
+</blockquote>
+<h3 id="3-常见文件头："><a href="#3-常见文件头：" class="headerlink" title="3. 常见文件头："></a>3. 常见文件头：</h3><blockquote>
+<p>PNG (89 50 4E 47 0D 0A 1A 0A)，JPG (FF D8 DD E0 00 10 4A 46)，GIF (47 49 46 38 39 61 CA 03)  </p>
+</blockquote>
+<h3 id="4-绕过方法："><a href="#4-绕过方法：" class="headerlink" title="4. 绕过方法："></a>4. 绕过方法：</h3><blockquote>
+<p>在文件首部添加文件头的字符串编码（将16进制文件头转化为字符串写入文件中或者直接用winhex将16进制代码写入进去），把具有图片文件头的文件上传用burp suite抓取，改文件后缀为php再把请求发送出去。  </p>
+</blockquote>
+<hr>
+<h1 id="htaccess绕过"><a href="#htaccess绕过" class="headerlink" title=" .htaccess绕过 "></a><font color="#FF0000"> .htaccess绕过 </font></h1><blockquote>
+<p>常见的黑名单检测代码如下图。  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">示例代码:</span><br><span class="line">&lt;?php</span><br><span class="line">if (!empty($_POST[&#39;submit&#39;])) &#123;</span><br><span class="line">    $name &#x3D; basename($_FILES[&#39;file&#39;][&#39;name&#39;]);</span><br><span class="line">    $ext &#x3D; pathinfo($name)[&#39;extension&#39;];</span><br><span class="line">    $blacklist &#x3D; array(&quot;php&quot;, &quot;php7&quot;, &quot;php5&quot;, &quot;php4&quot;, &quot;php3&quot;, &quot;phtml&quot;, &quot;pht&quot;, &quot;jsp&quot;, &quot;jspa&quot;, &quot;jspx&quot;, &quot;jsw&quot;, &quot;jsv&quot;, &quot;jspf&quot;, &quot;jtml&quot;, &quot;asp&quot;, &quot;aspx&quot;, &quot;asa&quot;, &quot;asax&quot;, &quot;ascx&quot;, &quot;ashx&quot;, &quot;asmx&quot;, &quot;cer&quot;, &quot;swf&quot;);</span><br><span class="line">    if (!in_array($ext, $blacklist)) &#123;</span><br><span class="line">        if (move_uploaded_file($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], UPLOAD_PATH . $name)) &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;上传成功&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">            echo &quot;上传文件相对路径&lt;br&gt;&quot; . UPLOAD_URL_PATH . $name;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;上传失败&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        echo &quot;&lt;script&gt;alert(&#39;文件类型不匹配&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-代码审计"><a href="#1-代码审计" class="headerlink" title="1. 代码审计"></a>1. 代码审计</h2><blockquote>
+<p>代码把常见的网页可执行文件后缀放在一个数组黑名单，if语句判断文件扩展名（后缀）是否在黑名单中。如果不在黑名单（!in_array前面的!表示否），执行嵌套在if里面的if语句——移动上传文件到网站上传文件存放路径。如果在黑名单执行else语句——返回上传失败  </p>
+</blockquote>
+<h2 id="2-绕过方法"><a href="#2-绕过方法" class="headerlink" title="2. 绕过方法"></a>2. 绕过方法</h2><blockquote>
+<p>黑名单没有对.htaccess关键字过滤，可以上传.htaccess文件（分布式配置文件）进行绕过  </p>
+</blockquote>
+<h2 id="3-htaccess代码"><a href="#3-htaccess代码" class="headerlink" title="3. .htaccess代码"></a>3. .htaccess代码</h2><blockquote>
+<p>&lt;FilesMatch jpg|png|gif&gt;<br>     SetHandler application/x-httpd-php<br>&lt;/FilesMatch&gt;  </p>
+</blockquote>
+<h2 id="4-htaccess代码含义"><a href="#4-htaccess代码含义" class="headerlink" title="4..htaccess代码含义"></a>4..htaccess代码含义</h2><blockquote>
+<p>让Apache把当前.htaccess文件所在的目录下的jpg|png|gif图片文件当作php文件解析  </p>
+</blockquote>
+<hr>
+<h1 id="00截断"><a href="#00截断" class="headerlink" title=" 00截断 "></a><font color="#FF0000"> 00截断 </font></h1><blockquote>
+<p>php版本要小于5.3.4，5.3.4及以上已经修复该问题，magic_quotes_gpc需要为OFF  </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">示例代码:</span><br><span class="line">&lt;?php</span><br><span class="line">if (!empty($_POST[&#39;submit&#39;])) &#123; </span><br><span class="line">    $name &#x3D; basename($_FILES[&#39;file&#39;][&#39;name&#39;]);</span><br><span class="line">    $info &#x3D; pathinfo($name);</span><br><span class="line">    $ext &#x3D; $info[&#39;extension&#39;];</span><br><span class="line">    $whitelist &#x3D; array(&quot;jpg&quot;, &quot;png&quot;, &quot;gif&quot;);</span><br><span class="line">    if (in_array($ext, $whitelist)) &#123;</span><br><span class="line">        $des &#x3D; $_GET[&#39;road&#39;] . &quot;&#x2F;&quot; . rand(10, 99) . date(&quot;YmdHis&quot;) . &quot;.&quot; . $ext;</span><br><span class="line">        if (move_uploaded_file($_FILES[&#39;file&#39;][&#39;tmp_name&#39;], $des)) &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;上传成功&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            echo &quot;&lt;script&gt;alert(&#39;上传失败&#39;)&lt;&#x2F;script&gt;&quot;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        echo &quot;文件类型不匹配&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><blockquote>
+<p>代码做了一个白名单数组匹配，文件后缀只有在白名单中才能上传成功。并且上传之后文件会重命名（随机字符串+年月日小时分钟秒），会将$des变量和重命名文件进行拼接，$des变量内容是由$_GET[‘road’]获取的</p>
+</blockquote>
+<h2 id="绕过方法"><a href="#绕过方法" class="headerlink" title="绕过方法"></a>绕过方法</h2><blockquote>
+<p>因为上传后重新生成的文件名我们不知道，所以我们不能在filename参数后面截断  </p>
+</blockquote>
+<img src="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/3.png" class>  
+
+<blockquote>
+<p>代码会将路径和文件进行拼接，再看看请求信息发现有个GET参数road=/var/www/html/upload，很明显这是一个上传路径。可以利用这个路径进行00路径截断。在路径后面添加shell.php%00（把shell.php当成一个目录），路径和文件拼接的时候会截断（忽略）%00后面的内容。因为shell.php目录不存在，因此shell.php就变成了上传文件的文件名</p>
+</blockquote>
+<img src="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/4.png" class>
+
+<blockquote>
+<p>关于00截断原理的一些思考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zpy1998zpy/article/details/80545408?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242" title="CSDN">点击加载</a></p>
+</blockquote>
+
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a  href="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/">文件上传小结（基础）</a></p>
+        <p><span>文章作者:</span><a  href="/" title="访问  的个人博客"></a></p>
+        <p><span>发布时间:</span>2020年09月20日 - 20时47分</p>
+        <p><span>最后更新:</span>2020年10月19日 - 14时03分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/" title="文件上传小结（基础）">https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://dawnchen.design/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/　　作者: " title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target = "_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a  href="/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          CTF练习平台
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E7%BB%95%E8%BF%87"><span class="toc-number">1.</span> <span class="toc-text">上传绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E9%AA%8C%E8%AF%81%E7%BB%95%E8%BF%87"><span class="toc-number">1.1.</span> <span class="toc-text"> 前端验证绕过 </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%AB%AF%E9%AA%8C%E8%AF%81%E7%BB%95%E8%BF%87"><span class="toc-number">1.2.</span> <span class="toc-text"> 后端验证绕过 </span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%96%87%E4%BB%B6%E5%A4%B4%E3%80%81%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B%E7%BB%95%E8%BF%87-MIME"><span class="toc-number">1.2.1.</span> <span class="toc-text">1. 文件头、文件类型绕过(MIME)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">1.2.2.</span> <span class="toc-text">2. 代码审计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E5%B8%B8%E8%A7%81%E6%96%87%E4%BB%B6%E5%A4%B4%EF%BC%9A"><span class="toc-number">1.2.3.</span> <span class="toc-text">3. 常见文件头：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%BB%95%E8%BF%87%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="toc-number">1.2.4.</span> <span class="toc-text">4. 绕过方法：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#htaccess%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text"> .htaccess绕过 </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">2.1.</span> <span class="toc-text">1. 代码审计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BB%95%E8%BF%87%E6%96%B9%E6%B3%95"><span class="toc-number">2.2.</span> <span class="toc-text">2. 绕过方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-htaccess%E4%BB%A3%E7%A0%81"><span class="toc-number">2.3.</span> <span class="toc-text">3. .htaccess代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-htaccess%E4%BB%A3%E7%A0%81%E5%90%AB%E4%B9%89"><span class="toc-number">2.4.</span> <span class="toc-text">4..htaccess代码含义</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#00%E6%88%AA%E6%96%AD"><span class="toc-number">3.</span> <span class="toc-text"> 00截断 </span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">3.1.</span> <span class="toc-text">代码审计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E6%96%B9%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">绕过方法</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+<div class="bdsharebuttonbox">
+	<a href="#" class="fx fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+	<a href="#" class="fx fa-weixin bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+	<a href="#" class="fx fa-qq bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a>
+	<a href="#" class="fx fa-facebook-official bds_fbook" data-cmd="fbook" title="分享到Facebook"></a>
+	<a href="#" class="fx fa-twitter bds_twi" data-cmd="twi" title="分享到Twitter"></a>
+	<a href="#" class="fx fa-linkedin bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a>
+	<a href="#" class="fx fa-files-o bds_copy" data-cmd="copy" title="分享到复制网址"></a>
+</div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"2","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+
+
+
+
+    
+        <section class="changyan" id="comments">
+  <!--<div id="uyan_frame"></div>-->
+  <div id="SOHUCS"></div>
+  <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+  <script type="text/javascript">
+    window.changyan.api.config({
+      appid: 'xxxx',
+      conf: 'xxxxxxxxx'
+    });
+  </script>
+</section>
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a  href="/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/" title="上一篇: CTF练习平台">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a  href="/" title="回到主页"><i class="fa fa-home"></i></a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/10/13/CISCN-2019-%E5%88%9D%E8%B5%9B-Love-Math/">(CISCN 2019 初赛)Love Math</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/10/05/CG-CTF-x00/">CG-CTF/x00</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/">sql注入常见代码</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/">CTF练习平台</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/">文件上传小结（基础）</a></li></ul>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                &copy; 2020 DawnChen
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank">Hexo &nbsp;&nbsp;</a><a href="https://github.com/maochunguang" target="_blank">Blog</a> by tommy
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" >极客到访数: 
+                            <span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>, </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit">本页阅读量: 
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+
+
+<script src="/js/main.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            var backgroundnum = 1;
+            var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'xxxxx', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "//hm.baidu.com/hm.js?xxxxxx";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false});</script></body>
+</html>
