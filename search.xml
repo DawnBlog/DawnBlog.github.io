@@ -53,25 +53,6 @@
       </categories>
   </entry>
   <entry>
-    <title>CTF练习平台</title>
-    <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
-    <content><![CDATA[<p>新手——进阶——writeup</p>
-<a id="more"></a>
-<h2 id="新手"><a href="#新手" class="headerlink" title="新手"></a>新手</h2><blockquote>
-<p>bugku：<a href="https://www.ctfhub.com/" title="bugku">点击直达</a><br>南邮CTF：<a href="https://cgctf.nuptsast.com/challenges#Web" title="南邮CTF">点击直达</a><br>CTFHub：<a href="https://www.ctfhub.com/#/index" title="CTFHub">点击直达</a><br>攻防世界：<a href="https://adworld.xctf.org.cn/" title="攻防世界">点击直达</a>  </p>
-</blockquote>
-<hr>
-<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><blockquote>
-<p>i春秋：<a href="https://www.ichunqiu.com/battalion" title="CTFHub">点击直达</a><br>BUUCTF：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a><br>X计划平台：<a href="https://www.linkedbyx.com/home" title="X计划平台">点击直达</a>  </p>
-</blockquote>
-<hr>
-<h2 id="Writeup"><a href="#Writeup" class="headerlink" title="Writeup"></a>Writeup</h2><p>颖奇L’Amore：<a href="https://www.gem-love.com/" title="颖奇L&#39;Amore">点击直达</a></p>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-  </entry>
-  <entry>
     <title>(CISCN 2019 初赛)Love Math</title>
     <url>/2020/10/13/CISCN-2019-%E5%88%9D%E8%B5%9B-Love-Math/</url>
     <content><![CDATA[<blockquote>
@@ -101,6 +82,25 @@
       <categories>
         <category>CTF</category>
         <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>CTF练习平台</title>
+    <url>/2020/09/21/CTF%E9%9D%B6%E5%9C%BA%E5%90%88%E9%9B%86/</url>
+    <content><![CDATA[<p>新手——进阶——writeup</p>
+<a id="more"></a>
+<h2 id="新手"><a href="#新手" class="headerlink" title="新手"></a>新手</h2><blockquote>
+<p>bugku：<a href="https://www.ctfhub.com/" title="bugku">点击直达</a><br>南邮CTF：<a href="https://cgctf.nuptsast.com/challenges#Web" title="南邮CTF">点击直达</a><br>CTFHub：<a href="https://www.ctfhub.com/#/index" title="CTFHub">点击直达</a><br>攻防世界：<a href="https://adworld.xctf.org.cn/" title="攻防世界">点击直达</a>  </p>
+</blockquote>
+<hr>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><blockquote>
+<p>i春秋：<a href="https://www.ichunqiu.com/battalion" title="CTFHub">点击直达</a><br>BUUCTF：<a href="https://buuoj.cn/" title="BUUCTF">点击直达</a><br>X计划平台：<a href="https://www.linkedbyx.com/home" title="X计划平台">点击直达</a>  </p>
+</blockquote>
+<hr>
+<h2 id="Writeup"><a href="#Writeup" class="headerlink" title="Writeup"></a>Writeup</h2><p>颖奇L’Amore：<a href="https://www.gem-love.com/" title="颖奇L&#39;Amore">点击直达</a></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
       </categories>
   </entry>
   <entry>
